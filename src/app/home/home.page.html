@@ -1,20 +1,467 @@
-<ion-header [translucent]="true">
+<!-- <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Blank
+      PouchDB-CouchDB
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="ion-padding">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
+      <ion-title size="large">PouchDB-CouchDB</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Code</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor = "let product of productData">
+        <td>{{ product.id }}</td>
+        <td>{{ product.code }}</td>
+        <td style = "display: flex;">
+          <ion-button color="tertiary" size = "small" routerLink="/student-detail/{{item.id}}">
+            <ion-icon name = "eye"></ion-icon>
+          </ion-button>
+          <ion-button color="warning" size = "small" routerLink="/student-edit/{{item.id}}">
+            <ion-icon name = "create"></ion-icon>
+          </ion-button>
+          <ion-button color="danger" size = "small" (click)="delete(item)">
+            <ion-icon name = "trash"></ion-icon>
+          </ion-button>
+        </td>
+    </tr>
+    </tbody>
+  </table>
 </ion-content>
+ -->
+ 
+ <ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start" *ngIf="_global.getnaviFrom() == 'sidemenu'">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons slot="start" *ngIf="_global.getnaviFrom() == 'list'">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Cash Bill
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-menu-button disabled style="color: transparent;"></ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item *ngIf="userData && userData.name == 'SA' && _global.getnaviFrom() == 'list' && backgroundColor != 'transparent'" (click)="editBtn()">
+    <ion-label position="stacked">
+      Doc No (Press to Edit)
+    </ion-label>
+    <ion-input type="text" [(ngModel)]="cbdocno" readOnly>
+    </ion-input>
+  </ion-item> 
+
+  <ion-item *ngIf="(_global.getnaviFrom() == 'sidemenu') || (_global.getnaviFrom() == 'list' && userData && userData.name != 'SA') || (_global.getnaviFrom() == 'list' && userData && userData.name == 'SA' && backgroundColor == 'transparent')">
+    <ion-label position="stacked">
+      Doc No
+    </ion-label>
+    <ion-input type="text" [(ngModel)]="cbdocno" readOnly>
+    </ion-input>
+  </ion-item> 
+
+  <ion-item>
+    <ion-label position="stacked">
+      Date
+    </ion-label>
+    <ion-datetime displayFormat="YYYY-MM-DD" [(ngModel)]="cbdate" readOnly></ion-datetime>
+  </ion-item>
+
+  <ion-item *ngIf="_global.getnaviFrom() == 'sidemenu'">
+    <ion-label position="stacked">
+      Customer (Press to Select)
+    </ion-label>
+    <!--<ion-select okText="Okay" cancelText="Dismiss" [(ngModel)]="custSel">
+      <ion-select-option *ngFor="let cust of customers" [value]="cust">
+        {{cust.name}}
+      </ion-select-option>
+    </ion-select>!-->
+    <ion-input [(ngModel)]="custSel.name" (click)="navToCust()" readOnly>
+    </ion-input>
+  </ion-item>
+
+  <ion-item *ngIf="_global.getnaviFrom() == 'list'">
+    <ion-label position="stacked">
+      Customer
+    </ion-label>
+    <ion-input [(ngModel)]="custSel.name" readOnly>
+    </ion-input>
+  </ion-item>
+
+  <ion-item *ngIf="_global.getnaviFrom() == 'sidemenu'">
+    <ion-label position="stacked">
+      Address Line 1
+    </ion-label>
+    <ion-textarea [(ngModel)]="custSel.address1">
+    </ion-textarea>
+  </ion-item>
+  <ion-item *ngIf="_global.getnaviFrom() == 'list'">
+    <ion-label position="stacked">
+      Address Line 1
+    </ion-label>
+    <ion-textarea [(ngModel)]="custSel.address1" readOnly>
+    </ion-textarea>
+  </ion-item>
+
+  <ion-item *ngIf="_global.getnaviFrom() == 'sidemenu'">
+    <ion-label position="stacked">
+      Address Line 2
+    </ion-label>
+    <ion-textarea [(ngModel)]="custSel.address2">
+    </ion-textarea>
+  </ion-item>
+  <ion-item *ngIf="_global.getnaviFrom() == 'list'">
+    <ion-label position="stacked">
+      Address Line 2
+    </ion-label>
+    <ion-textarea [(ngModel)]="custSel.address2" readOnly>
+    </ion-textarea>
+  </ion-item>
+
+  <ion-item *ngIf="_global.getnaviFrom() == 'sidemenu'">
+    <ion-label position="stacked">
+      Address Line 3
+    </ion-label>
+    <ion-textarea [(ngModel)]="custSel.address3">
+    </ion-textarea>
+  </ion-item>
+  <ion-item *ngIf="_global.getnaviFrom() == 'list'">
+    <ion-label position="stacked">
+      Address Line 3
+    </ion-label>
+    <ion-textarea [(ngModel)]="custSel.address3" readOnly>
+    </ion-textarea>
+  </ion-item>
+
+  <ion-item *ngIf="_global.getnaviFrom() == 'sidemenu'">
+    <ion-label position="stacked">
+      Address Line 4
+    </ion-label>
+    <ion-textarea [(ngModel)]="custSel.address4">
+    </ion-textarea>
+  </ion-item>
+  <ion-item *ngIf="_global.getnaviFrom() == 'list'">
+    <ion-label position="stacked">
+      Address Line 4
+    </ion-label>
+    <ion-textarea [(ngModel)]="custSel.address4" readOnly>
+    </ion-textarea>
+  </ion-item>
+
+  <ion-item *ngIf="_global.getnaviFrom() == 'sidemenu'">
+    <ion-label position="stacked">
+      Remark (Optional)
+    </ion-label>
+    <ion-textarea [(ngModel)]="rmk">
+    </ion-textarea>
+  </ion-item>
+
+  <ion-item class="itmlbl" lines="none">
+    <ion-label>
+      Item
+    </ion-label>
+  </ion-item>
+
+  <ion-item *ngFor="let item of items; let i = index">
+    <table class="cbDetailsTb">
+      <tr>
+        <td colspan="6">
+          {{i + 1}}. {{item.itmdescr}}
+        </td>
+      </tr>
+      <tr>
+        <td *ngIf="_global.getnaviFrom() == 'sidemenu'">
+          <ion-button (click)="itemqtyChange(i, 'minus')">
+            <ion-icon name="md-remove"></ion-icon>
+          </ion-button>
+        </td>
+        <td *ngIf="_global.getnaviFrom() == 'sidemenu'">
+          <ion-input class="editableamt" type="number" clearOnEdit="true" [(ngModel)]="item.itmqty" (ionFocus)="emptyField('qty',i)" (ionBlur)="restoreqty(i)" (ngModelChange)="itemqtyChange(i, '')"></ion-input>
+        </td>
+        <td *ngIf="_global.getnaviFrom() == 'sidemenu'">
+          <ion-button (click)="itemqtyChange(i, 'add')">
+            <ion-icon name="md-add"></ion-icon>
+          </ion-button>
+        </td>
+        <td *ngIf="_global.getnaviFrom() == 'list'">
+          <ion-label>Qty : </ion-label>
+        </td>
+        <td *ngIf="_global.getnaviFrom() == 'list'">
+          <ion-label>{{item.itmqty}} CYL</ion-label>
+        </td>
+        <td *ngIf="_global.getnaviFrom() == 'list'">
+          <ion-label style="color: transparent;">Blank</ion-label>
+        </td>
+        <td>
+          RM
+        </td>
+        <td *ngIf="_global.getnaviFrom() == 'sidemenu'">
+          <ion-input class="editableamt" type="number" clearOnEdit="true" [(ngModel)]="item.itmprice" (ionFocus)="emptyField('item',i)" (ionBlur)="checkprice(item.itmcode,item.itmprice,i)" (keyup.enter)="checkprice(item.itmcode,item.itmprice,i)"></ion-input>
+        </td>
+        <td *ngIf="_global.getnaviFrom() == 'list'">
+          <ion-label>{{item.itmprice}}</ion-label>
+        </td>
+        <td>
+          RM
+        </td>
+        <td>
+          {{item.itmtotprice}}
+        </td>
+      </tr>
+    </table>
+  </ion-item>
+
+  <!--<ion-item *ngIf="_global.getnaviFrom() == 'sidemenu'">
+    <table class="cbDetailsTb2">
+      <tr>
+        <td colspan="2">
+          {{items.length + 1}}. LPG Cylinder Deposit 12/14/50 KG
+        </td>
+      </tr>
+      <tr>
+        <td>
+          RM
+        </td>
+        <td>
+          <ion-input class="editableamt" type="number" clearOnEdit="true" [(ngModel)]="deposit" (ionFocus)="emptyField('deposit')" (ionBlur)="depChg()" (keyup.enter)="depChg()"></ion-input>
+        </td>
+      </tr>
+    </table>
+  </ion-item>
+
+  <ion-item *ngIf="_global.getnaviFrom() == 'list' && deposit > 0">
+    <table class="cbDetailsTb2">
+      <tr>
+        <td colspan="2">
+          {{items.length + 1}}. LPG Cylinder Deposit 12/14/50 KG
+        </td>
+      </tr>
+      <tr>
+        <td>
+          RM
+        </td>
+        <td>
+          <ion-label>{{deposit}}</ion-label>
+        </td>
+      </tr>
+    </table>
+  </ion-item>
+
+  <ion-item *ngIf="_global.getnaviFrom() == 'sidemenu'">
+    <table class="cbDetailsTb2">
+      <tr>
+        <td colspan="2">
+          {{items.length + 2}}. Transport & Handling Charges
+        </td>
+      </tr>
+      <tr>
+        <td>
+          RM
+        </td>
+        <td>
+          <ion-input class="editableamt" type="number" clearOnEdit="true" [(ngModel)]="TnHCharges" (ionFocus)="emptyField('TnHCharges')" (ionBlur)="tnhChg()" (keyup.enter)="tnhChg()"></ion-input>
+        </td>
+      </tr>
+    </table>
+  </ion-item>
+
+  <ion-item *ngIf="_global.getnaviFrom() == 'list' && TnHCharges > 0">
+    <table class="cbDetailsTb2">
+      <tr>
+        <td colspan="2">
+          {{items.length + 2}}. Transport & Handling Charges
+        </td>
+      </tr>
+      <tr>
+        <td>
+          RM
+        </td>
+        <td>
+          <ion-label>{{TnHCharges}}</ion-label>
+        </td>
+      </tr>
+    </table>
+  </ion-item>!-->
+
+  <ion-item class="itmlbl" lines="none">
+    <ion-label>
+      Amount
+    </ion-label>
+  </ion-item>
+
+  <ion-item lines="none" class="cbDetailsTot">
+    <table>
+      <tr>
+        <td>
+          Subtotal
+        </td>
+        <td>
+          :
+        </td>
+        <td>
+          RM
+        </td>
+        <td>
+          {{subtotal}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Round.Off
+        </td>
+        <td>
+          :
+        </td>
+        <td>
+          RM
+        </td>
+        <td>
+          {{roundoff}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Total
+        </td>
+        <td>
+          :
+        </td>
+        <td>
+          RM
+        </td>
+        <td>
+          {{total}}
+        </td>
+      </tr>
+    </table>
+  </ion-item>
+
+  <ion-item class="itmlbl" lines="none">
+    <ion-label style="--color: transparent !important">
+      transparent text
+    </ion-label>
+  </ion-item>
+
+  <ion-item lines="none" class="cbDetailsChgs">
+    <table>
+      <tr>
+        <td>
+          Tender.Amt
+        </td>
+        <td>
+          :
+        </td>
+        <td>
+          RM
+        </td>
+        <td>
+          <ion-input class="editableamt" type="number" [(ngModel)]="tenderamt" (keyup.enter)="retCash()" (ionBlur)="retCash()" *ngIf="_global.getnaviFrom() == 'sidemenu'"></ion-input>
+          <ion-input [(ngModel)]="tenderamt" *ngIf="_global.getnaviFrom() == 'list'" readOnly></ion-input>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Return.Amt
+        </td>
+        <td>
+          :
+        </td>
+        <td>
+          RM
+        </td>
+        <td>
+          {{retamt}}
+        </td>
+      </tr>
+    </table>
+  </ion-item>
+
+  <ion-item lines="none" class="cbDetailsBtn" *ngIf="_global.getnaviFrom() == 'sidemenu'">
+    <table>
+      <tr>
+        <td>
+          <ion-button expand="block" (click)="newBtn()">
+            New
+          </ion-button>
+        </td>
+        <td>
+          <ion-button expand="block" (click)="saveBtn()">
+            Save
+          </ion-button>
+        </td>
+      </tr>
+    </table>
+  </ion-item>
+
+  <ion-item lines="none" class="cbDetailsBtn" *ngIf="_global.getnaviFrom() == 'list' && printTimes < 2">
+    <table>
+      <tr>
+        <td>
+          <ion-button expand="block" (click)="printCB(param)">
+            print
+          </ion-button>
+        </td>
+      </tr>
+    </table>
+  </ion-item>
+</ion-content>
+
+<ion-footer>
+  <table *ngIf="userdownprog">
+    <tr>
+      <td>
+        User
+      </td>
+      <td>
+        New : {{usercountAdd}} / {{maxusercountAdd}}
+      </td>
+      <td>
+        Update : {{usercountUpdate}} / {{maxusercountUpdate}}
+      </td>
+    </tr>
+  </table>
+
+  <table *ngIf="custdownprog">
+    <tr>
+      <td>
+        Customer
+      </td>
+      <td>
+        New : {{custcountAdd}} / {{maxcustcountAdd}}
+      </td>
+      <td>
+        Update : {{custcountUpdate}} / {{maxcustcountUpdate}}
+      </td>
+    </tr>
+  </table>
+
+  <table *ngIf="itemdownprog">
+    <tr>
+      <td>
+        Item
+      </td>
+      <td>
+        New : {{itemcountAdd}} / {{maxitemcountAdd}}
+      </td>
+      <td>
+        Update : {{itemcountUpdate}} / {{maxitemcountUpdate}}
+      </td>
+    </tr>
+  </table>
+</ion-footer>
